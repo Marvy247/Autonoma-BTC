@@ -49,8 +49,8 @@
 ### Phase 7 – Marketplace
 - [x] Agent listing grid with filters (yield, type, reputation)
 - [x] Agent NFT buy flow (mock + contract call)
-- [ ] Agent NFT mint/list flow
-- [ ] Swarm builder – combine agents into a workflow
+- [x] Agent NFT mint/list flow
+- [x] Swarm builder – combine agents into a workflow
 
 ### Phase 8 – Polish & Demo Prep
 - [ ] Responsive design audit (mobile + desktop)
