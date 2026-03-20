@@ -1,0 +1,33 @@
+[project]
+name = "autonoma-btc"
+description = "Decentralized Autonomous AI Agent OS on Bitcoin (Stacks)"
+authors = []
+telemetry = false
+cache_dir = "./.cache"
+
+# Deploy order matters — registry first, then vault (depends on registry),
+# then payment-router and slashing last.
+
+[contracts.agent-registry]
+path = "contracts/agent-registry.clar"
+epoch = "3.1"
+clarity_version = 3
+
+[contracts.agent-vault]
+path = "contracts/agent-vault.clar"
+epoch = "3.1"
+clarity_version = 3
+
+[contracts.payment-router]
+path = "contracts/payment-router.clar"
+epoch = "3.1"
+clarity_version = 3
+
+[contracts.slashing]
+path = "contracts/slashing.clar"
+epoch = "3.1"
+clarity_version = 3
+
+[repl.analysis]
+passes = ["check_checker"]
+check_checker = { trusted_sender = false, trusted_caller = false, callee_filter = false }
