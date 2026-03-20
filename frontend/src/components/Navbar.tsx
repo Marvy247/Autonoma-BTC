@@ -8,6 +8,7 @@ const navLinks = [
   { path: '/dashboard', label: 'Dashboard' },
   { path: '/forge', label: 'Forge Agent' },
   { path: '/swarm', label: 'Swarm Builder' },
+  { path: '/x402', label: '⚡ x402 Payments' },
   { path: '/marketplace', label: 'Marketplace' },
 ];
 

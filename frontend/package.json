@@ -14,12 +14,14 @@
     "@stacks/network": "^7.3.1",
     "@stacks/transactions": "^7.3.1",
     "@vercel/analytics": "^1.6.1",
+    "axios": "^1.13.6",
     "framer-motion": "^12.26.2",
     "lucide-react": "^0.577.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hot-toast": "^2.6.0",
-    "react-router-dom": "^7.9.1"
+    "react-router-dom": "^7.9.1",
+    "x402-stacks": "^2.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

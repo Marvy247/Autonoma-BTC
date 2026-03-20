@@ -5,10 +5,13 @@ import { ArrowLeft, Activity, TrendingUp, Zap, Shield, Play, Pause, DollarSign, 
 import { useAgents } from '../context/AgentContext';
 import { AGENT_TYPE_LABELS, STATUS_COLORS, timeAgo } from '../utils/format';
 import MintListModal from '../components/MintListModal';
+import X402PaymentPanel from '../components/X402PaymentPanel';
+import { useWallet } from '../context/WalletContext';
 
 export default function AgentDetail() {
   const { id } = useParams<{ id: string }>();
   const { agents, updateAgent } = useAgents();
+  const { network } = useWallet();
   const agent = agents.find(a => a.id === id);
   const [showMintModal, setShowMintModal] = useState(false);
 
@@ -160,6 +163,9 @@ export default function AgentDetail() {
           </div>
         )}
       </div>
+
+      {/* x402 Payment Layer */}
+      <X402PaymentPanel agentName={agent.name} network={network as 'testnet' | 'mainnet'} />
     </div>
   );
 }

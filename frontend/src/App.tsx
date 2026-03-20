@@ -11,6 +11,7 @@ import Forge from './pages/Forge';
 import Marketplace from './pages/Marketplace';
 import AgentDetail from './pages/AgentDetail';
 import SwarmBuilder from './pages/SwarmBuilder';
+import X402Explorer from './pages/X402Explorer';
 
 function PageWrapper({ children }: { children: React.ReactNode }) {
   return (
@@ -36,6 +37,7 @@ function AnimatedRoutes() {
         <Route path="/forge" element={<PageWrapper><Forge /></PageWrapper>} />
         <Route path="/marketplace" element={<PageWrapper><Marketplace /></PageWrapper>} />
         <Route path="/swarm" element={<PageWrapper><SwarmBuilder /></PageWrapper>} />
+        <Route path="/x402" element={<PageWrapper><X402Explorer /></PageWrapper>} />
         <Route path="/agent/:id" element={<PageWrapper><AgentDetail /></PageWrapper>} />
       </Routes>
     </AnimatePresence>

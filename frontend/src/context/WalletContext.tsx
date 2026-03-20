@@ -1,9 +1,5 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
-import { AppConfig, UserSession, showConnect } from '@stacks/connect';
-import { STACKS_TESTNET, STACKS_MAINNET } from '@stacks/network';
-
-const appConfig = new AppConfig(['store_write', 'publish_data']);
-export const userSession = new UserSession({ appConfig });
+import { connect, disconnect } from '@stacks/connect';
 
 interface WalletContextType {
   address: string | null;
@@ -12,51 +8,46 @@ interface WalletContextType {
   connect: () => void;
   disconnect: () => void;
   toggleNetwork: () => void;
-  getNetwork: () => typeof STACKS_TESTNET | typeof STACKS_MAINNET;
 }
 
 const WalletContext = createContext<WalletContextType | null>(null);
 
 export function WalletProvider({ children }: { children: ReactNode }) {
-  const [address, setAddress] = useState<string | null>(() => {
-    if (userSession.isUserSignedIn()) {
-      const data = userSession.loadUserData();
-      return data.profile.stxAddress.testnet;
-    }
-    return null;
-  });
+  const [address, setAddress] = useState<string | null>(null);
   const [network, setNetwork] = useState<'testnet' | 'mainnet'>('testnet');
 
-  const connect = useCallback(() => {
-    showConnect({
-      appDetails: { name: 'Autonoma BTC', icon: '/favicon.png' },
-      redirectTo: '/',
-      onFinish: () => {
-        const data = userSession.loadUserData();
-        const addr = network === 'testnet'
-          ? data.profile.stxAddress.testnet
-          : data.profile.stxAddress.mainnet;
-        setAddress(addr);
-      },
-      userSession,
-    });
-  }, [network]);
+  const handleConnect = useCallback(async () => {
+    try {
+      // connect() opens the wallet selector modal (Leather, Xverse, etc.)
+      // Returns { addresses: AddressEntry[] } where each entry has symbol + address
+      const result = await connect();
+      const stxEntry = result.addresses.find(
+        a => a.symbol === 'STX' || a.address.startsWith('S')
+      );
+      if (stxEntry) setAddress(stxEntry.address);
+    } catch (e) {
+      console.error('[wallet] connect cancelled or failed', e);
+    }
+  }, []);
 
-  const disconnect = useCallback(() => {
-    userSession.signUserOut('/');
+  const handleDisconnect = useCallback(() => {
+    disconnect();
     setAddress(null);
   }, []);
 
   const toggleNetwork = useCallback(() => {
-    setNetwork(n => n === 'testnet' ? 'mainnet' : 'testnet');
+    setNetwork(n => (n === 'testnet' ? 'mainnet' : 'testnet'));
   }, []);
 
-  const getNetwork = useCallback(() => {
-    return network === 'testnet' ? STACKS_TESTNET : STACKS_MAINNET;
-  }, [network]);
-
   return (
-    <WalletContext.Provider value={{ address, isConnected: !!address, network, connect, disconnect, toggleNetwork, getNetwork }}>
+    <WalletContext.Provider value={{
+      address,
+      isConnected: !!address,
+      network,
+      connect: handleConnect,
+      disconnect: handleDisconnect,
+      toggleNetwork,
+    }}>
       {children}
     </WalletContext.Provider>
   );
