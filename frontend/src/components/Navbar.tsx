@@ -7,6 +7,7 @@ import { shortenAddress } from '../utils/format';
 const navLinks = [
   { path: '/dashboard', label: 'Dashboard' },
   { path: '/forge', label: 'Forge Agent' },
+  { path: '/swarm', label: 'Swarm Builder' },
   { path: '/marketplace', label: 'Marketplace' },
 ];
 

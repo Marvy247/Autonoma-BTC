@@ -1,13 +1,16 @@
-import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Activity, TrendingUp, Zap, Shield, Play, Pause, DollarSign } from 'lucide-react';
+import { ArrowLeft, Activity, TrendingUp, Zap, Shield, Play, Pause, DollarSign, Tag } from 'lucide-react';
 import { useAgents } from '../context/AgentContext';
 import { AGENT_TYPE_LABELS, STATUS_COLORS, timeAgo } from '../utils/format';
+import MintListModal from '../components/MintListModal';
 
 export default function AgentDetail() {
   const { id } = useParams<{ id: string }>();
   const { agents, updateAgent } = useAgents();
   const agent = agents.find(a => a.id === id);
+  const [showMintModal, setShowMintModal] = useState(false);
 
   if (!agent) {
     return (
@@ -51,7 +54,17 @@ export default function AgentDetail() {
         >
           {agent.status === 'active' ? <><Pause size={14} /> Pause</> : <><Play size={14} /> Resume</>}
         </button>
+        <button
+          onClick={() => setShowMintModal(true)}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-orange-50 text-orange-600 border border-orange-200 hover:bg-orange-100 transition-all"
+        >
+          <Tag size={14} /> Mint / List NFT
+        </button>
       </div>
+
+      <AnimatePresence>
+        {showMintModal && <MintListModal agent={agent} onClose={() => setShowMintModal(false)} />}
+      </AnimatePresence>
 
       {/* Stats grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
