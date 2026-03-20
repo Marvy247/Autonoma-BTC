@@ -38,7 +38,9 @@ export default function X402Explorer() {
   const [activeFlowStep, setActiveFlowStep] = useState(0);
   const [paymentHistory, setPaymentHistory] = useState<X402PaymentResult[]>([]);
   const [lastResult, setLastResult] = useState<X402PaymentResult | null>(null);
-  const [demoWallet] = useState(() => generateKeypair(x402Network));
+  const [demoWallet] = useState<{ address: string; privateKey: string; publicKey: string } | null>(() => {
+    try { return generateKeypair(x402Network); } catch { return null; }
+  });
 
   const payload402 = buildPaymentRequiredPayload(
     'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
@@ -349,6 +351,7 @@ export default function X402Explorer() {
       )}
 
       {/* Demo wallet info */}
+      {demoWallet && (
       <div className="bg-white border border-app-border rounded-2xl p-5">
         <div className="flex items-center gap-2 mb-3">
           <Shield size={15} className="text-orange-500" />
@@ -375,6 +378,7 @@ export default function X402Explorer() {
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 }
