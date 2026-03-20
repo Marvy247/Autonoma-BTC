@@ -14,7 +14,7 @@ const FEATURES = [
   {
     icon: <Cpu size={22} className="text-orange-500" />,
     title: 'Natural Language → Agent',
-    desc: 'Describe your agent in plain English. AgentForge generates secure Clarity contracts and deploys them in one click.',
+    desc: 'Describe your agent in plain English. Autonoma BTC generates secure Clarity contracts and deploys them in one click.',
   },
   {
     icon: <Shield size={22} className="text-blue-500" />,
@@ -152,7 +152,7 @@ export default function Landing() {
               One OS. Every Agent. All on Bitcoin.
             </h2>
             <p className="text-text-dim text-lg max-w-xl mx-auto">
-              AgentForge unifies yield optimization, data research, trading, and payments into a single composable protocol.
+              Autonoma BTC unifies yield optimization, data research, trading, and payments into a single composable protocol.
             </p>
           </div>
 

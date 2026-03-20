@@ -1,4 +1,4 @@
-# AgentForge – Build Plan
+# Autonoma BTC – Build Plan
 > Decentralized Autonomous AI Agent Operating System on Bitcoin (Stacks)
 > Hackathon: Buidl Battle | Deadline: March 31st
 
@@ -10,11 +10,11 @@
 - [x] Initialize git repo with proper .gitignore
 - [x] Create plan.md (this file)
 - [x] Install missing dependencies (@stacks/connect, @stacks/transactions, lucide-react)
-- [x] Update index.html with AgentForge branding & meta tags
+- [x] Update index.html with Autonoma BTC branding & meta tags
 - [x] Set up global theme colors (Bitcoin orange + dark mode)
 
 ### Phase 2 – Core Pages & Routing
-- [x] Rewrite App.tsx with AgentForge nav, routes, and layout
+- [x] Rewrite App.tsx with Autonoma BTC nav, routes, and layout
 - [x] Landing page – hero, features, stats, CTA
 - [x] Dashboard page – agent overview, stats, quick actions
 - [x] Forge page – natural-language agent creation wizard
@@ -63,7 +63,7 @@
 ## Architecture Overview
 
 ```
-AgentForge
+Autonoma BTC
 ├── frontend/               # Vite + React + Tailwind
 │   ├── src/
 │   │   ├── pages/          # Landing, Dashboard, Forge, Marketplace, AgentDetail
@@ -81,7 +81,7 @@ AgentForge
 
 ## Judging Criteria Mapping
 
-| Criterion | How AgentForge Wins |
+| Criterion | How Autonoma BTC Wins |
 |---|---|
 | Innovation | First full AI Agent OS on Bitcoin. NL → Clarity deployment. |
 | Technical Depth | 4 audited Clarity contracts, x402 A2A payments, sBTC vaults |

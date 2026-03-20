@@ -23,7 +23,7 @@ export default function Navbar() {
             <Zap size={16} className="text-white" />
           </div>
           <span className="font-display font-bold text-lg tracking-tight text-text-main">
-            Agent<span className="text-orange-500">Forge</span>
+            Autonoma<span className="text-orange-500"> BTC</span>
           </span>
         </Link>
 

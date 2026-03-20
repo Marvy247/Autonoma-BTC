@@ -64,13 +64,13 @@ function App() {
                     <span className="text-white text-xs font-bold">⚡</span>
                   </div>
                   <span className="font-display font-bold text-lg text-text-main">
-                    Agent<span className="text-orange-500">Forge</span>
+                    Autonoma<span className="text-orange-500"> BTC</span>
                   </span>
                 </div>
                 <p className="text-xs text-text-pale text-center">
                   Built on Bitcoin · Powered by Stacks · Secured by Clarity
                 </p>
-                <p className="text-xs text-text-pale">© 2026 AgentForge</p>
+                <p className="text-xs text-text-pale">© 2026 Autonoma BTC</p>
               </div>
             </footer>
           </div>

@@ -29,7 +29,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
   const connect = useCallback(() => {
     showConnect({
-      appDetails: { name: 'AgentForge', icon: '/favicon.png' },
+      appDetails: { name: 'Autonoma BTC', icon: '/favicon.png' },
       redirectTo: '/',
       onFinish: () => {
         const data = userSession.loadUserData();
