@@ -9,6 +9,8 @@ import {
   type X402Asset,
   type X402PaymentResult,
 } from '../utils/x402';
+import { sendX402Payment } from '../utils/stacksContract';
+import { CONTRACTS } from '../utils/contracts';
 import { useWallet } from '../context/WalletContext';
 
 interface X402PaymentPanelProps {
@@ -26,9 +28,25 @@ export default function X402PaymentPanel({ agentName, network }: X402PaymentPane
     if (!isConnected) { connect(); return; }
     setPaying(endpointId);
     try {
-      const result = await simulateX402Payment(endpointId, network, asset, price);
-      setResults(prev => ({ ...prev, [endpointId]: result }));
-    } finally {
+      // Fire real on-chain x402 payment via payment-router contract
+      sendX402Payment(
+        CONTRACTS.paymentRouter.split('.')[0], // pay to deployer/router
+        price,
+        `x402: ${endpointId}`,
+        async (txId) => {
+          // Also run the x402 simulation to get formatted result
+          const result = await simulateX402Payment(endpointId, network, asset, price);
+          setResults(prev => ({ ...prev, [endpointId]: { ...result, txId } }));
+          setPaying(null);
+        },
+        async () => {
+          // Wallet cancelled — fall back to simulation so demo still works
+          const result = await simulateX402Payment(endpointId, network, asset, price);
+          setResults(prev => ({ ...prev, [endpointId]: result }));
+          setPaying(null);
+        }
+      );
+    } catch {
       setPaying(null);
     }
   };

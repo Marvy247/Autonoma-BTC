@@ -6,6 +6,8 @@ import { useAgents } from '../context/AgentContext';
 import type { Agent, AgentType } from '../context/AgentContext';
 import { useWallet } from '../context/WalletContext';
 import toast from 'react-hot-toast';
+import { registerAgent, deployAgentContract } from '../utils/stacksContract';
+import { explorerTx } from '../utils/contracts';
 
 const AGENT_TEMPLATES = [
   {
@@ -95,29 +97,85 @@ export default function Forge() {
   const handleDeploy = async () => {
     if (!isConnected) { connect(); return; }
     setIsDeploying(true);
-    await new Promise(r => setTimeout(r, 2500)); // Simulate contract deployment
 
     const template = AGENT_TEMPLATES[selectedTemplate ?? 3];
-    const newAgent: Agent = {
-      id: Date.now().toString(),
-      name: agentName || `${template.title} #${Math.floor(Math.random() * 999)}`,
-      description: prompt.slice(0, 120),
-      type: template.type,
-      status: 'active',
-      sBtcBalance: 0,
-      usdcxBalance: 0,
-      stxBalance: 0,
-      totalEarnings: 0,
-      reputationScore: 500,
-      tasksCompleted: 0,
-      lastActive: new Date(),
-      txHistory: [],
-    };
+    const finalName = agentName || `${template.title} #${Math.floor(Math.random() * 999)}`;
 
-    addAgent(newAgent);
-    setIsDeploying(false);
-    toast.success('Agent deployed to Stacks testnet! 🚀');
-    navigate('/dashboard');
+    // Step 1: Deploy the generated Clarity contract via wallet
+    deployAgentContract(
+      finalName,
+      GENERATED_CLARITY,
+      (contractTxId) => {
+        toast.success(
+          <span>
+            Contract deployed!{' '}
+            <a href={explorerTx(contractTxId)} target="_blank" rel="noopener noreferrer" className="underline">
+              View tx
+            </a>
+          </span>
+        );
+
+        // Step 2: Register agent in the registry contract
+        registerAgent(
+          finalName,
+          prompt.slice(0, 256),
+          template.type,
+          (registryTxId) => {
+            const newAgent: Agent = {
+              id: Date.now().toString(),
+              name: finalName,
+              description: prompt.slice(0, 120),
+              type: template.type,
+              status: 'active',
+              sBtcBalance: 0,
+              usdcxBalance: 0,
+              stxBalance: 0,
+              totalEarnings: 0,
+              reputationScore: 500,
+              tasksCompleted: 0,
+              lastActive: new Date(),
+              txHistory: [{
+                id: registryTxId,
+                type: 'deploy',
+                amount: 0,
+                currency: 'STX',
+                memo: `Registered on-chain · tx: ${registryTxId.slice(0, 12)}...`,
+                timestamp: new Date(),
+              }],
+            };
+            addAgent(newAgent);
+            setIsDeploying(false);
+            toast.success('Agent registered on Stacks testnet! 🚀');
+            navigate('/dashboard');
+          },
+          () => {
+            // Registry cancelled — still add locally
+            const newAgent: Agent = {
+              id: Date.now().toString(),
+              name: finalName,
+              description: prompt.slice(0, 120),
+              type: template.type,
+              status: 'active',
+              sBtcBalance: 0,
+              usdcxBalance: 0,
+              stxBalance: 0,
+              totalEarnings: 0,
+              reputationScore: 500,
+              tasksCompleted: 0,
+              lastActive: new Date(),
+              txHistory: [],
+            };
+            addAgent(newAgent);
+            setIsDeploying(false);
+            navigate('/dashboard');
+          }
+        );
+      },
+      () => {
+        setIsDeploying(false);
+        toast.error('Deploy cancelled');
+      }
+    );
   };
 
   return (

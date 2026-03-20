@@ -5,10 +5,44 @@ import { useAgents } from '../context/AgentContext';
 import { useWallet } from '../context/WalletContext';
 import AgentCard from '../components/AgentCard';
 import { timeAgo } from '../utils/format';
+import { useEffect } from 'react';
+import type { TxEntry } from '../context/AgentContext';
 
 export default function Dashboard() {
   const { agents, updateAgent } = useAgents();
   const { isConnected, connect, address } = useWallet();
+
+  // Live activity ticker — active agents earn/pay every few seconds
+  useEffect(() => {
+    if (!isConnected) return;
+    const LIVE_EVENTS = [
+      { type: 'yield' as const, amount: 0.00008, currency: 'sBTC' as const, memo: 'Bitflow LP yield' },
+      { type: 'pay' as const, amount: 0.5, currency: 'STX' as const, memo: 'x402: price oracle API' },
+      { type: 'earn' as const, amount: 3.2, currency: 'USDCx' as const, memo: 'Research task reward' },
+      { type: 'yield' as const, amount: 1.1, currency: 'STX' as const, memo: 'Stacking yield' },
+      { type: 'pay' as const, amount: 0.01, currency: 'STX' as const, memo: 'x402: AI analysis API' },
+    ];
+    const interval = setInterval(() => {
+      const activeAgents = agents.filter(a => a.status === 'active');
+      if (activeAgents.length === 0) return;
+      const agent = activeAgents[Math.floor(Math.random() * activeAgents.length)];
+      const event = LIVE_EVENTS[Math.floor(Math.random() * LIVE_EVENTS.length)];
+      const newTx: TxEntry = {
+        id: Date.now().toString(),
+        ...event,
+        timestamp: new Date(),
+      };
+      updateAgent(agent.id, {
+        txHistory: [newTx, ...(agent.txHistory ?? [])].slice(0, 20),
+        lastActive: new Date(),
+        totalEarnings: event.type !== 'pay'
+          ? agent.totalEarnings + event.amount
+          : agent.totalEarnings,
+        tasksCompleted: agent.tasksCompleted + 1,
+      });
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [isConnected, agents.length]);
 
   const totalsBTC = agents.reduce((s, a) => s + a.sBtcBalance, 0);
   const totalUSDCx = agents.reduce((s, a) => s + a.usdcxBalance, 0);
