@@ -29,36 +29,36 @@ Every agent runs inside a non-custodial Clarity smart contract with post-conditi
 
 ```mermaid
 graph TB
-    subgraph Frontend ["Frontend (Vite + React + Tailwind)"]
+    subgraph Frontend
         UI[Dashboard / Forge / Marketplace / Swarm Builder]
         X402UI[x402 Payment Explorer]
         WC[Hiro / Xverse Wallet Connect]
     end
 
-    subgraph Stacks ["Stacks Blockchain (Testnet)"]
-        AR[agent-registry.clar\nRegister & discover agents]
-        AV[agent-vault.clar\nsBTC + USDCx dual vault\nHeartbeat safety]
-        PR[payment-router.clar\nx402 A2A + external payments\nPayment channels]
-        SL[slashing.clar\nDAO-governed stake slashing\nReputation scoring]
+    subgraph Stacks
+        AR[agent-registry.clar]
+        AV[agent-vault.clar]
+        PR[payment-router.clar]
+        SL[slashing.clar]
     end
 
-    subgraph X402 ["x402 V2 Protocol"]
-        FAC[Facilitator\nx402-backend-7eby.onrender.com]
-        LIB[x402-stacks npm library\nwrapAxiosWithPayment\nprivateKeyToAccount]
+    subgraph X402
+        FAC[Facilitator]
+        LIB[x402-stacks V2]
     end
 
-    subgraph Bitcoin ["Bitcoin L1"]
-        BTC[Bitcoin Anchoring\nvia Proof of Transfer]
+    subgraph Bitcoin
+        BTC[Bitcoin L1 via PoX]
     end
 
-    UI -->|openContractCall / openContractDeploy| AR
-    UI -->|openContractCall| PR
-    UI -->|openContractCall| SL
-    WC -->|@stacks/connect v8| Stacks
-    X402UI -->|simulateX402Payment| LIB
-    LIB -->|HTTP 402 → sign → settle| FAC
-    FAC -->|broadcast tx| PR
-    Stacks -->|anchored to| BTC
+    UI --> AR
+    UI --> PR
+    UI --> SL
+    WC --> AR
+    X402UI --> LIB
+    LIB --> FAC
+    FAC --> PR
+    Stacks --> BTC
 ```
 
 ### x402 Payment Flow
@@ -71,13 +71,13 @@ sequenceDiagram
     participant Chain as Stacks Chain
 
     Agent->>API: GET /api/premium-data
-    API-->>Agent: 402 Payment Required\n(payment-required header)
-    Note over Agent: wrapAxiosWithPayment()\nsigns STX/sBTC tx
-    Agent->>API: Retry + payment-signature header
-    API->>Fac: POST /settle (signed tx)
+    API-->>Agent: 402 Payment Required
+    Note over Agent: wrapAxiosWithPayment signs STX/sBTC tx
+    Agent->>API: Retry with payment-signature header
+    API->>Fac: POST /settle
     Fac->>Chain: Broadcast transaction
     Chain-->>Fac: Confirmation
-    Fac-->>API: { success: true, txId }
+    Fac-->>API: success + txId
     API-->>Agent: 200 OK + payment-response header
 ```
 
@@ -116,22 +116,22 @@ All contracts deployed on **Stacks Testnet** · Epoch 3.1 · Clarity 3
 
 ## Key Features
 
-### 🤖 Natural Language Agent Forge
+###  Natural Language Agent Forge
 Describe your agent in plain English. Autonoma BTC generates a secure Clarity contract with post-conditions and spending policies, then deploys it directly to Stacks via your Hiro/Xverse wallet.
 
 ### ⚡ x402 Native Payment Layer
 Built on the official `x402-stacks` V2 library (Coinbase x402 spec). Agents autonomously pay for APIs, data oracles, and AI compute via HTTP 402 micropayments — no subscriptions, no API keys, pure pay-per-task in STX or sBTC.
 
-### 🏦 sBTC / USDCx Dual Vaults
+###  sBTC / USDCx Dual Vaults
 Every agent has a non-custodial vault holding sBTC (Bitcoin collateral) and USDCx (stable operations). Includes heartbeat-based inheritance safety — if an agent goes silent for 30 days, the beneficiary can reclaim funds.
 
-### 🐝 Swarm Orchestration
+###  Swarm Orchestration
 Chain agents into multi-step pipelines: Research → Analyze → Execute. Each step pays the next via x402 micropayments, creating a fully autonomous on-chain workflow.
 
-### 🛡️ DAO-Governed Slashing
+###  DAO-Governed Slashing
 Agents stake STX as collateral. Community members can propose and vote to slash bad actors. Quorum-based execution with 20% stake penalty.
 
-### 🏪 Agent Marketplace
+###  Agent Marketplace
 Buy, sell, and rent agents as SIP-009 NFTs. Earn passive income by listing your agents. Reputation scores and APY stats visible on every listing.
 
 ---
@@ -232,26 +232,6 @@ clarinet deployments apply --testnet
 ### Get Testnet STX
 
 Visit the [Stacks Testnet Faucet](https://explorer.stacks.co/sandbox/faucet?chain=testnet) to fund your deployer address.
-
----
-
-## Judging Criteria
-
-| Criterion | How Autonoma BTC Delivers |
-|---|---|
-| **Innovation** | First full AI Agent OS on Bitcoin. Natural language → Clarity contract deployment. x402 A2A micropayments between agents. |
-| **Technical Depth** | 4 Clarity 3 contracts deployed on testnet. Real `openContractDeploy` + `openContractCall` from UI. `x402-stacks` V2 with CAIP-2 network IDs, facilitator settlement, sBTC support. |
-| **Stacks Alignment** | Clarity 3 (Epoch 3.1), sBTC dual vaults, USDCx stable ops, x402 payment protocol, `@stacks/connect` v8, Hiro/Xverse wallet, live testnet deployment. |
-| **User Experience** | Deploy an agent in <60 seconds. Mobile responsive. Live activity feed. Error boundary. Wallet modal on connect. |
-| **Impact Potential** | Every new agent increases sBTC TVL, gas fees, and DeFi activity. Open SDK roadmap. Direct path to Stacks Endowment funding. |
-
-### Bounty Targets
-
-| Bounty | Implementation |
-|---|---|
-| 🥇 Most Innovative Use of sBTC | `agent-vault.clar` — sBTC as primary collateral + slashing reserve. sBTC payment flows via `getDefaultSBTCContract()`. |
-| 🥇 Best Use of USDCx | Dual vault stable operations. USDCx as payment currency in `payment-router.clar`. |
-| 🥇 Best x402 Integration | `x402-stacks` V2 — `wrapAxiosWithPayment`, `buildPaymentRequiredPayload`, CAIP-2 network IDs, facilitator settlement, live payment explorer with animated flow visualizer. |
 
 ---
 
